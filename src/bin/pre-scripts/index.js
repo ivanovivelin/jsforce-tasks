@@ -1,4 +1,4 @@
-
+import * as utils from '../utils';
 
 /**
  * @description CI2 update Profile , Sprint 78 This is an example tasks
@@ -10,8 +10,6 @@ export async function updateProfile(conn, profileName) {
     conn.metadata.read('Profile', [profileName], async function (err, metadata) {
 
         var profileName = 'Admin';
-
-        console.log("Correction permissions for the profile: " + profileName);
 
         var metadataUpdated = {
             fullName: profileName,
@@ -31,7 +29,7 @@ export async function updateProfile(conn, profileName) {
         });
     
         try {
-            await upsertMetadata(conn, "Profile",  metadataUpdated);
+            await utils.upsertMetadata(conn, "Profile",  metadataUpdated);
         } catch(e) {
             reject(e);
         }
@@ -41,17 +39,17 @@ export async function updateProfile(conn, profileName) {
 
 
 /**
- * 
+ * @author Ivelin Ivanov
+ * @description wrapper function to call all scripts
  */
 
 export async function runAllScripts(conn, profileName) { 
     try {
-        await foo(); 
-        await bar();
+        //add all functions here
         await updateProfile(conn, profileName);
       } catch (err) {
         console.log('Error running Tasks => ', err);
     }
 }
 
-export default {foo, bar, runAllScripts, updateProfile}
+export default { runAllScripts }

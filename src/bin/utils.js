@@ -1,10 +1,11 @@
+import * as root from './root';
 const jsforce = require('jsforce');
-import tasks from './scripts/index';
 
-const conn = new jsforce.Connection({
-   // you can change loginUrl to connect to sandbox or prerelease env.
-   loginUrl : 'https://test.salesforce.com'
-});
+var args = process.argv.slice(2);
+
+var parseArgs = require('minimist');
+
+var argv = parseArgs(args);
 
 /**
  * @description
@@ -12,15 +13,26 @@ const conn = new jsforce.Connection({
  */
 
 export async function connectSF() {
-  return new Promise((resolve, reject) => {
-    conn.login('', '', async function(err, userInfo) {
-      if (err) { reject(`Error connection to Salesforce => ${err}`); }
-      console.log(conn.accessToken);
-      console.log(conn.instanceUrl);
-      // logged in user property
-      console.log("User ID: " + userInfo.id);
-      console.log("Org ID: " + userInfo.organizationId);
-      resolve(userInfo.id);
+  return new Promise(async (resolve, reject) => {
+
+    const config =  await root.getYaml(argv);
+
+    const conn = new jsforce.Connection({
+      // you can change loginUrl to connect to sandbox or prerelease env.
+      loginUrl : config.env
+    });
+
+    conn.login(config.username, config.password, async function(err, userInfo) {
+      if (err) { 
+        reject(`Error connection to Salesforce => ${err}`); 
+      } else {
+        console.log(conn.accessToken);
+        console.log(conn.instanceUrl);
+        // logged in user property
+        console.log("User ID: " + userInfo.id);
+        console.log("Org ID: " + userInfo.organizationId);
+        resolve(userInfo.id);
+      }
     });
   });
 }

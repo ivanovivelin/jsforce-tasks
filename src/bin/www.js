@@ -5,7 +5,7 @@
  */
 
 import app from '../app';
-import * as index from './utils';
+import * as utils from './utils';
 import debugLib from 'debug';
 import http from 'http';
 
@@ -43,8 +43,9 @@ server.on('listening', onListening);
 
  async function asyncTasks() {
   try {
-    const connResult = await index.connectSF();
-    //const preScripts = await index.runTasks();
+    const connResult = await utils.connectSF();
+    //const preScripts = await utils.runTasks();
+    process.exitCode = 1;
   } catch (err) {
     console.log('Error running Tasks => ', err);
   }
@@ -114,4 +115,4 @@ function onListening() {
 process.on('unhandledRejection', (err) => { 
   console.error(err)
   process.exit(1)
-})
+});
