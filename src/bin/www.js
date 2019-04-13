@@ -6,10 +6,16 @@
 
 import app from '../app';
 import * as utils from './utils';
+import * as prescripts from './pre-scripts/index';
+import * as postscripts from './post-scripts/index';
 import debugLib from 'debug';
 import http from 'http';
 
 const debug = debugLib('your-project-name:server');
+
+const args = process.argv.slice(2);
+const parseArgs = require('minimist');
+const argv = parseArgs(args);
 
 /**
  * Get port from environment and store in Express.
@@ -33,25 +39,22 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
- * Setup JSForce Connection
+ * Run Core Scripts
  */
 
-
-/**
- * Import Connect to Salesforce 
- */
-
- async function asyncTasks() {
+ async function asyncTasks(options) {
   try {
-    const connResult = await utils.connectSF();
-    //const preScripts = await utils.runTasks();
+    const connResult = await utils.connect(options);
+    const preScriptsResult = await prescripts.runAll(connResult);
+    console.log(`Finished running pre-scripts ${preScriptsResult}`);
+    //const postScriptsResult = await postscripts.runAll(connResult);
     process.exitCode = 1;
   } catch (err) {
     console.log('Error running Tasks => ', err);
   }
  }
 
- asyncTasks();
+ asyncTasks(argv);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -107,7 +110,7 @@ function onError(error) {
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-  console.log(`Listening on ${bind}`);
+  console.log(`Express Server Listening on ${bind}`);
   debug('Listening on ' + bind);
 }
 

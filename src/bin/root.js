@@ -6,7 +6,7 @@ const fs = require('fs');
  * @param {*} options 
  */
 
- export async function getYaml(options) {
+ export async function getJob(options) {
     return new Promise((resolve, reject) => {
         try {
             var config = yaml.safeLoad(fs.readFileSync(process.cwd() + '/' + options.job, 'utf8'));
